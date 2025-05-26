@@ -1,0 +1,166 @@
+<!-- Alert de Sucesso -->
+<div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+  {{ successMessage }}
+  <button type="button" class="btn-close" aria-label="Close" (click)="successMessage = null"></button>
+</div>
+
+<!-- Alert de Erro -->
+<div *ngIf="errorMessages?.length" class="alert alert-danger alert-dismissible fade show" role="alert">
+  <ul>
+    <li *ngFor="let err of errorMessages">{{ err }}</li>
+  </ul>
+  <button type="button" class="btn-close" aria-label="Close" (click)="errorMessages = null"></button>
+</div>
+
+<div style="margin-bottom: 90px;">
+  <h2 class="mb-4">{{ customerId ? 'Editar Cliente' : 'Novo Cliente' }}</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="row g-3">
+
+    <div class="col-md-6">
+      <label class="form-label">Nome:</label>
+      <input formControlName="name" type="text" class="form-control">
+      <div *ngIf="form.get('name')?.errors?.['required'] && (form.get('name')?.touched || formSubmitted)" class="text-danger small">
+        Nome é obrigatório.
+      </div>
+    </div>
+
+    
+    <div class="col-md-6">
+      <label class="form-label">Email:</label>
+      <input formControlName="email" type="email" class="form-control">
+      <div *ngIf="form.get('email')?.errors?.['required'] && (form.get('email')?.touched || formSubmitted)" class="text-danger small">
+        Email é obrigatório.
+      </div>
+      <div *ngIf="form.get('email')?.errors?.['email'] && (form.get('email')?.touched || formSubmitted)" class="text-danger small">
+        Email válido é obrigatório.
+      </div>
+    </div>
+
+        <div class="col-md-6">
+      <label class="form-label">Telefone:</label>
+      <input formControlName="phone" type="text" class="form-control" mask="(00) 0 0000-0000">
+      <div *ngIf="form.get('phone')?.errors?.['required'] && (form.get('phone')?.touched || formSubmitted)" class="text-danger small">
+        Telefone é obrigatório.
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Data de Nascimento:</label>
+      <input type="text" formControlName="birthDate" class="form-control" mask="00/00/0000" />
+      <div *ngIf="form.get('birthDate')?.errors?.['required'] && (form.get('birthDate')?.touched || formSubmitted)" class="text-danger small">
+        Data de Nascimento é obrigatória.
+      </div>
+      <!-- <div *ngIf="form.get('birthDate')?.errors?.['ageInvalid'] && (form.get('birthDate')?.touched || formSubmitted)" class="text-danger small">
+        O cliente deve ter pelo menos 18 anos de idade.
+      </div> -->
+      <div *ngIf="form.get('birthDate')?.errors?.['invalidDateFormat'] && (form.get('birthDate')?.touched || formSubmitted)" class="text-danger small">
+        Formato de data inválido. Use dd/MM/yyyy.
+      </div>
+    </div>    
+    
+    <div class="col-md-6">
+      <label class="form-label">CPF/CNPJ:</label>
+      <input formControlName="cpfCnpj" type="text" class="form-control" [mask]="cpfCnpjMask" >      
+      <div *ngIf="form.get('cpfCnpj')?.errors?.['required'] && (form.get('cpfCnpj')?.touched || formSubmitted)" class="text-danger small">
+        CPF/CNPJ é obrigatório.
+      </div>
+    </div>
+    <div class="col-md-6"></div>
+
+    <div class="col-md-6">
+      <div class="row">
+        <label class="form-label">CEP:</label>
+        <div class="col-md-9">        
+          <input formControlName="zipCode" type="text" class="form-control" mask="00000-000">
+        </div>
+        <div class="col-md-3">
+          <button type="button" class="btn btn-outline-secondary" (click)="buscarCep()">Buscar CEP</button>
+        </div>      
+      </div>
+      <div *ngIf="form.get('zipCode')?.errors?.['required'] && (form.get('zipCode')?.touched || formSubmitted)" class="text-danger small">
+        Cep é obrigatório.
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <label class="form-label">Rua:</label>
+      <input formControlName="street" type="text" class="form-control">
+      <div *ngIf="form.get('street')?.errors?.['required'] && (form.get('street')?.touched || formSubmitted)" class="text-danger small">
+        Endereço é obrigatório.
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Número:</label>
+      <input formControlName="number" type="text" class="form-control">
+      <div *ngIf="form.get('number')?.errors?.['required'] && (form.get('number')?.touched || formSubmitted)" class="text-danger small">
+        Número é obrigatório.
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Bairro:</label>
+      <input formControlName="neighborhood" type="text" class="form-control">
+      <div *ngIf="form.get('neighborhood')?.errors?.['required'] && (form.get('neighborhood')?.touched || formSubmitted)" class="text-danger small">
+        Bairro é obrigatório.
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Cidade:</label>
+      <input formControlName="city" type="text" class="form-control">
+      <div *ngIf="form.get('city')?.errors?.['required'] && (form.get('city')?.touched || formSubmitted)" class="text-danger small">
+        Cidade é obrigatória.
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <label class="form-label">Estado:</label>
+      <input formControlName="state" type="text" class="form-control">
+      <div *ngIf="form.get('state')?.errors?.['required'] && (form.get('state')?.touched || formSubmitted)" class="text-danger small">
+        Estado é obrigatório.
+      </div>
+    </div>    
+
+    <div class="col-md-6 d-flex align-items-center">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" formControlName="isIndividual" id="isIndividual">
+        <label class="form-check-label" for="isIndividual">Pessoa Física?</label>
+      </div>
+    </div>
+
+  <div *ngIf="!form.get('isIndividual')?.value">
+     <div class="col-md-3 d-flex align-items-center">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" formControlName="isStateRegistrationExempt" id="isentoIE">
+          <label class="form-check-label" for="isentoIE">Isento de IE</label>
+        </div>
+      </div>
+  </div>
+
+    <div *ngIf="!form.get('isIndividual')?.value && !form.get('isStateRegistrationExempt')?.value">
+      <div class="col-md-6">
+        <label class="form-label">Inscrição Estadual:</label>
+        <input formControlName="stateRegistration" type="text" class="form-control">
+        <div *ngIf="form.get('stateRegistration')?.errors?.['required'] && (form.get('stateRegistration')?.touched || formSubmitted)" class="text-danger small">
+          O IE é obrigatório, ao menos que seja isento.
+        </div>
+      </div>      
+    </div>
+
+    
+
+    <div class="col-12" style="margin-top: 30px;" >
+      <button type="submit" class="btn btn-primary me-2">
+        <i class="bi bi-save"></i> Salvar
+      </button>
+      <button type="button" (click)="goBack()" class="btn btn-secondary">
+        <i class="bi bi-arrow-left"></i> Voltar
+      </button>
+    </div>
+
+  </form>
+
+  <div *ngIf="loading" class="mt-3 alert alert-info">Carregando cliente...</div>
+</div>

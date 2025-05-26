@@ -1,0 +1,62 @@
+<div *ngIf="successMessage" class="alert alert-success alert-dismissible fade show" role="alert">
+  {{ successMessage }}
+  <button type="button" class="btn-close" aria-label="Close" (click)="successMessage = null"></button>
+</div>
+
+<h2>Lista de Clientes</h2>
+
+<div *ngIf="error" class="error">{{ error }}</div>
+
+<div class="customer-list">
+    <button class="button button-new" (click)="createCustomer()">
+        <span class="material-icons">add</span>
+        Novo
+    </button>    
+
+    <table *ngIf="customers.length > 0; else noData" border="1" cellpadding="8" cellspacing="0">
+    <thead>
+        <tr>
+        <th>Nome</th>
+        <th>CPF/CNPJ</th>
+        <th>Data Nasc.</th>
+        <th>Telefone</th>
+        <th>Email</th>        
+        <th>Tipo</th>        
+        <th></th>
+        <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let customer of customers" (click)="editCustomer(customer.id)">
+        <td>{{ customer.name }}</td>
+        <td>{{ customer.cpfCnpj | cpfCnpjFormat }}</td>
+        <td>{{ customer.birthDate | date: 'dd/MM/yyyy' }}</td>
+        <td>{{ customer.phone | telefoneFormat }}</td>
+        <td>{{ customer.email }}</td>        
+        <td>{{ customer.isIndividual ? 'Pessoa Física' : 'Pessoa Jurídica' }}</td>        
+            <td>
+                <button class="button button-edit" (click)="editCustomer(customer.id); $event.stopPropagation();">
+                    <span class="material-icons">edit</span>
+                    Editar
+                </button>
+            </td>
+            <td>
+                <button class="button button-delete" (click)="onDelete(customer.id, $event)"> 
+                    <span class="material-icons">delete</span>
+                    Excluir
+                </button>
+            </td>
+        </tr>
+    </tbody>
+    </table>
+
+    <ng-template #noData>
+    <p>Nenhum cliente encontrado.</p>
+    </ng-template>
+
+    <div class="paginator">
+    <button (click)="previousPage()" [disabled]="pageNumber <= 1">Anterior</button>
+    <span>Página {{ pageNumber }} de {{ totalPages }}</span>
+    <button (click)="nextPage()" [disabled]="pageNumber >= totalPages">Próximo</button>
+    </div>
+</div>
