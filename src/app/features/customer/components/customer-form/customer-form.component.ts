@@ -26,10 +26,13 @@ export class CustomerFormComponent {
   isEditMode = false;
   loading = false;
   cpfCnpjMask = '000.000.000-00';
-  formSubmitted = false;
-
-  successMessage: string | null = null;
+  formSubmitted = false;  
+  formDisabled = false;
+  
   errorMessages: string[] | null = null;
+
+  successMessage: string = '';
+  showSuccessToast: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -127,18 +130,12 @@ export class CustomerFormComponent {
     if (this.isEditMode && this.customerId) {
       console.log(customerData);
       this.customerService.updateCustomer(this.customerId, customerData).subscribe({
-        next: () => {
-          this.successMessage = 'Cliente atualizado com sucesso!';
-          this.router.navigate(['/customers'], { state: { message: 'Cliente atualizado com sucesso!' } });
-        },          
+        next: () => this.showToast('Cliente atualizado com sucesso!'),
         error: (err) => this.handleApiError(err)
       });
     } else {
       this.customerService.createCustomer(customerData).subscribe({
-        next: () => {
-          this.successMessage = 'Cliente criado com sucesso!';
-          this.router.navigate(['/customers'], { state: { message: 'Cliente criado com sucesso!' } });
-        },          
+        next: () => this.showToast('Cliente criado com sucesso!'),
         error: (err) => this.handleApiError(err)
       });
     }
@@ -219,5 +216,21 @@ export class CustomerFormComponent {
     } else {
       alert('CEP inválido');
     }
+  }
+
+  showToast(message: string) {
+    this.successMessage = message;
+    this.showSuccessToast = true;
+    this.formDisabled = true;
+    
+    setTimeout(() => {
+      this.showSuccessToast = false;
+      this.formDisabled = false;
+      this.goBack();
+    }, 1000);
+  }
+
+  closeSuccessToast() {
+    this.showSuccessToast = false;
   }
 }
